@@ -1,0 +1,6 @@
+This scripts tries to ease grepping postfix logs and reading its output.
+
+Inspired by exim's exigrep, it tries to clone its features or at least
+a subset of them.
+Currently, almost none of them are cloned yet, but more features may
+be added in the future. Or may be not.

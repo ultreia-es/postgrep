@@ -1,0 +1,22 @@
+#!/bin/sh
+
+if [ "$#" -lt "2" ]
+then
+  echo "Usage: $0 <pattern> <logfile1 [... logfilen]>" >&2
+  exit 1
+fi
+
+pattern="$1"
+
+shift
+
+# TODO: support different compressed file formats
+
+ids=$(zgrep "$pattern" "$@" | sed -e 's/ \+/ /g' | cut -d \  -f 6 | cut -sd : -f 1)
+
+test -z "$ids" && exit
+
+for id in $ids
+do
+  zfgrep " $id: " "$@" && echo
+done
