@@ -18,5 +18,10 @@ test -z "$ids" && exit
 
 for id in $ids
 do
-  zfgrep " $id: " "$@" && echo
+  if [ "$id" = "NOQUEUE" ]
+  then
+    zgrep " $id:.*$pattern" "$@" && echo
+  else
+    zfgrep " $id: " "$@" && echo
+  fi
 done
