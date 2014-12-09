@@ -10,18 +10,33 @@ pattern="$1"
 
 shift
 
-# TODO: support different compressed file formats
+# TODO: support mixed compressed file formats
 
-ids=$(zgrep -i "postfix/.*$pattern" "$@" | sed -e 's/ \+/ /g' | cut -d \  -f 6 | cut -sd : -f 1 | sort | uniq)
+GREP=grep
+FGREP=fgrep
+
+if echo "$1" | grep -q '\.gz$'
+then
+  GREP=zgrep
+  FGREP=zfgrep
+elif echo "$1" | grep -q '\.bz2$'
+then
+  GREP=bzgrep
+  FGREP=bzfgrep
+fi
+
+ids=$($GREP -i "postfix/.*$pattern" "$@" | sed -e 's/ \+/ /g' | cut -d \  -f 6 | cut -sd : -f 1 | sort | uniq)
 
 test -z "$ids" && exit
+
+# FIXME: This is terribly suboptimal
 
 for id in $ids
 do
   if [ "$id" = "NOQUEUE" ]
   then
-    zgrep " $id:.*$pattern" "$@" && echo
+    $GREP " $id:.*$pattern" "$@" && echo
   else
-    zfgrep " $id: " "$@" && echo
+    $FGREP " $id: " "$@" && echo
   fi
 done
